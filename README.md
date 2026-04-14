@@ -9,11 +9,6 @@
   Uma vitrine digital para microempreendedores e prestadores de serviços.
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/github/repo-size/WallisonDev/AuraUP?style=flat-square" alt="Repo Size">
-  <img src="https://img.shields.io/github/languages/top/seu-usuario/AuraUP?style=flat-square" alt="Top Language">
-  <img src="https://img.shields.io/github/last-commit/seu-usuario/AuraUP?style=flat-square" alt="Last Commit">
-</p>
 
 ---
 
