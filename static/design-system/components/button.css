@@ -1,0 +1,92 @@
+.ds-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  min-height: calc(var(--spacing-xl) + var(--spacing-lg));
+  padding-inline: var(--spacing-lg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-600);
+  line-height: var(--font-line-height-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.ds-button:hover {
+  text-decoration: none;
+}
+
+.ds-button:focus-visible {
+  outline: var(--spacing-xs) solid var(--color-ring);
+  outline-offset: var(--spacing-xs);
+}
+
+.ds-button:disabled,
+.ds-button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ds-button--primary {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+.ds-button--primary:hover {
+  background: color-mix(in srgb, var(--color-primary) 88%, var(--color-secondary));
+}
+
+.ds-button--primary:active {
+  background: color-mix(in srgb, var(--color-primary) 78%, var(--color-secondary));
+}
+
+.ds-button--secondary {
+  background: var(--color-secondary);
+  color: var(--color-secondary-foreground);
+}
+
+.ds-button--secondary:hover {
+  background: color-mix(in srgb, var(--color-secondary) 88%, var(--color-background));
+}
+
+.ds-button--secondary:active {
+  background: color-mix(in srgb, var(--color-secondary) 78%, var(--color-background));
+}
+
+.ds-button--outline {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
+}
+
+.ds-button--outline:hover {
+  background: var(--color-muted);
+}
+
+.ds-button--outline:active {
+  background: var(--color-accent);
+}
+
+.ds-button--ghost {
+  background: transparent;
+  color: var(--color-foreground);
+}
+
+.ds-button--ghost:hover {
+  background: var(--color-muted);
+}
+
+.ds-button--ghost:active {
+  background: var(--color-accent);
+}

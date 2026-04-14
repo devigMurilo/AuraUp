@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}{{ empresa.nome_fantasia }} — ConnectBiz{% endblock %}
+{% load avaliacoes_extras %}
+
+{% block content %}
+
+<!-- HEADER DA EMPRESA -->
+<div class="perfil-header">
+  <div class="empresa-avatar" style="width:80px;height:80px;border-radius:var(--radius-md);font-size:2rem;flex-shrink:0">
+    {% if empresa.foto_perfil %}
+      <img src="{{ empresa.foto_perfil.url }}" alt="{{ empresa.nome_fantasia }}"
+           style="width:80px;height:80px;border-radius:var(--radius-md);object-fit:cover">
+    {% else %}
+      {{ empresa.nome_fantasia|first|upper }}
+    {% endif %}
+  </div>
+
+  <div class="perfil-info" style="flex:1">
+    <h1>{{ empresa.nome_fantasia }}</h1>
+    <p class="categoria">{{ empresa.get_categoria_display }}</p>
+    <p class="cidade">📍 {{ empresa.cidade|default:"Cidade não informada" }}</p>
+    {% if empresa.descricao %}
+      <p style="margin-top:var(--spacing-sm);font-size:var(--font-size-small);color:var(--color-muted-foreground)">
+        {{ empresa.descricao }}
+      </p>
+    {% endif %}
+
+    <div class="perfil-stats">
+      <span>⭐ {{ empresa.media_avaliacoes }} média</span>
+      <span>👥 {{ empresa.total_seguidores }} seguidores</span>
+      {% if empresa.contato %}<span>📞 {{ empresa.contato }}</span>{% endif %}
+    </div>
+
+    {% if request.user.is_authenticated and request.user.tipo == 'cliente' %}
+      <form method="post" action="{% url 'follow' empresa.pk %}" style="margin-top:var(--spacing-md)">
+        {% csrf_token %}
+        <button type="submit" class="ds-button {% if ja_segue %}ds-button--outline{% else %}ds-button--primary{% endif %}">
+          {% if ja_segue %}✓ Seguindo{% else %}+ Seguir{% endif %}
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="mostrarTab('publicacoes', this)">Publicações</button>
+  <button class="tab" onclick="mostrarTab('avaliacoes', this)">Avaliações</button>
+</div>
+
+<!-- PUBLICAÇÕES -->
+<div id="tab-publicacoes" class="tab-content">
+  {% for pub in empresa.publicacoes.all %}
+    <article class="post-card">
+      <div class="post-header">
+        <span class="post-data">{{ pub.criado_em|date:"d/m/Y" }}</span>
+      </div>
+      <h2 class="post-titulo">
+        <a href="{% url 'detalhe_publicacao' pub.pk %}">{{ pub.titulo }}</a>
+      </h2>
+      <p class="post-conteudo">{{ pub.conteudo|truncatewords:30 }}</p>
+      {% if pub.imagem %}
+        <img src="{{ pub.imagem.url }}" class="post-imagem" alt="{{ pub.titulo }}">
+      {% endif %}
+      <div class="post-actions">
+        <span class="btn-curtir">❤️ {{ pub.total_curtidas }}</span>
+        <a href="{% url 'detalhe_publicacao' pub.pk %}" class="btn-comentar">💬 ver post</a>
+      </div>
+    </article>
+  {% empty %}
+    <p class="empty-state">Nenhuma publicação ainda.</p>
+  {% endfor %}
+</div>
+
+<!-- AVALIAÇÕES -->
+<div id="tab-avaliacoes" class="tab-content" style="display:none">
+  {% for av in empresa.avaliacoes.all %}
+    <div class="avaliacao-card">
+      <div class="avaliacao-header">
+        <strong>{{ av.usuario.nome }}</strong>
+        <span class="estrelas-display">{{ av.nota|stars }}</span>
+      </div>
+      {% if av.comentario %}
+        <p style="font-size:var(--font-size-small);color:var(--color-muted-foreground)">{{ av.comentario }}</p>
+      {% endif %}
+      <small style="color:var(--color-muted-foreground)">{{ av.criado_em|date:"d/m/Y" }}</small>
+    </div>
+  {% empty %}
+    <p class="empty-state">Nenhuma avaliação ainda.</p>
+  {% endfor %}
+
+  {% if request.user.is_authenticated and request.user.tipo == 'cliente' %}
+    <div class="form-avaliacao">
+      <h3>Deixe sua avaliação</h3>
+      <form method="post" action="{% url 'avaliar' empresa.pk %}" style="display:grid;gap:var(--spacing-lg)">
+        {% csrf_token %}
+        <div class="ds-field">
+          <label class="ds-field__label">Nota</label>
+          <div class="radio-stars">
+            {% for i in "12345" %}
+              <label>
+                <input type="radio" name="nota" value="{{ i }}" required> {{ i }}★
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="ds-field">
+          <label class="ds-field__label" for="comentario">Comentário (opcional)</label>
+          <textarea class="ds-field__control" name="comentario" id="comentario" rows="3"
+                    placeholder="Conte sua experiência..."></textarea>
+        </div>
+        <div>
+          <button type="submit" class="ds-button ds-button--primary">Enviar avaliação</button>
+        </div>
+      </form>
+    </div>
+  {% elif not request.user.is_authenticated %}
+    <p style="margin-top:var(--spacing-lg);font-size:var(--font-size-small);color:var(--color-muted-foreground)">
+      <a href="{% url 'login' %}">Faça login</a> para avaliar esta empresa.
+    </p>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function mostrarTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).style.display = 'block';
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

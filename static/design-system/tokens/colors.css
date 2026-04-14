@@ -1,0 +1,45 @@
+:root {
+  --color-primary: hsl(221 83% 53%);
+  --color-primary-foreground: hsl(210 40% 98%);
+  --color-secondary: hsl(215 28% 17%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+  --color-background: hsl(210 40% 98%);
+  --color-foreground: hsl(215 25% 15%);
+  --color-muted: hsl(210 20% 94%);
+  --color-muted-foreground: hsl(215 16% 35%);
+  --color-accent: hsl(210 20% 94%);
+  --color-accent-foreground: hsl(215 25% 15%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-success: hsl(142 71% 45%);
+  --color-success-foreground: hsl(210 40% 98%);
+  --color-border: hsl(214 20% 90%);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-primary);
+  --color-surface: hsl(0 0% 100%);
+  --color-surface-foreground: var(--color-foreground);
+  --color-overlay: hsl(215 28% 17% / 0.72);
+}
+
+[data-theme="dark"] {
+  --color-primary: hsl(221 83% 53%);
+  --color-primary-foreground: hsl(210 40% 98%);
+  --color-secondary: hsl(215 20% 18%);
+  --color-secondary-foreground: hsl(210 40% 96%);
+  --color-background: hsl(222 47% 6%);
+  --color-foreground: hsl(210 40% 96%);
+  --color-muted: hsl(217 22% 16%);
+  --color-muted-foreground: hsl(215 15% 72%);
+  --color-accent: hsl(217 22% 16%);
+  --color-accent-foreground: hsl(210 40% 96%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-success: hsl(142 71% 45%);
+  --color-success-foreground: hsl(210 40% 98%);
+  --color-border: hsl(217 22% 24%);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-primary);
+  --color-surface: hsl(222 35% 10%);
+  --color-surface-foreground: var(--color-foreground);
+  --color-overlay: hsl(222 47% 4% / 0.8);
+}

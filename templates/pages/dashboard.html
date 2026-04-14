@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — ConnectBiz{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Dashboard — {{ empresa.nome_fantasia }}</h1>
+
+<!-- CARDS DE RESUMO -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-icon">📝</span>
+    <span class="stat-valor">{{ empresa.publicacoes.count }}</span>
+    <span class="stat-label">Publicações</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">👥</span>
+    <span class="stat-valor">{{ empresa.total_seguidores }}</span>
+    <span class="stat-label">Seguidores</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">⭐</span>
+    <span class="stat-valor">{{ empresa.media_avaliacoes }}</span>
+    <span class="stat-label">Nota média</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">💬</span>
+    <span class="stat-valor">{{ empresa.avaliacoes.count }}</span>
+    <span class="stat-label">Avaliações</span>
+  </div>
+</div>
+
+<!-- GRÁFICOS -->
+<div class="charts-grid">
+  <div class="chart-card">
+    <h3>Seguidores por mês</h3>
+    <canvas id="chart-seguidores"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Publicações por mês</h3>
+    <canvas id="chart-publicacoes"></canvas>
+  </div>
+  <div class="chart-card chart-full">
+    <h3>Top 5 publicações (curtidas)</h3>
+    <canvas id="chart-top-posts"></canvas>
+  </div>
+</div>
+
+<!-- TOP POSTS TABELA -->
+<div class="card" style="margin-top:2rem">
+  <h3 style="margin-bottom:1rem">Publicações com mais curtidas</h3>
+  <table class="tabela">
+    <thead>
+      <tr><th>Publicação</th><th>Curtidas</th><th>Comentários</th></tr>
+    </thead>
+    <tbody>
+      {% for pub in top_posts %}
+        <tr>
+          <td><a href="{% url 'detalhe_publicacao' pub.pk %}">{{ pub.titulo }}</a></td>
+          <td>{{ pub.num_curtidas }}</td>
+          <td>{{ pub.comentarios.count }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3" class="empty-state">Nenhuma publicação ainda.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labelsSeg  = {{ labels_seg|safe }};
+  const valoresSeg = {{ valores_seg|safe }};
+  const labelsPub  = {{ labels_pub|safe }};
+  const valoresPub = {{ valores_pub|safe }};
+  const topTitulos = [{% for p in top_posts %}"{{ p.titulo|truncatechars:25 }}",{% endfor %}];
+  const topCurtidas= [{% for p in top_posts %}{{ p.num_curtidas }},{% endfor %}];
+
+  new Chart(document.getElementById('chart-seguidores'), {
+    type: 'line',
+    data: {
+      labels: labelsSeg,
+      datasets: [{ label: 'Seguidores', data: valoresSeg,
+        borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)',
+        tension: 0.4, fill: true }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+
+  new Chart(document.getElementById('chart-publicacoes'), {
+    type: 'bar',
+    data: {
+      labels: labelsPub,
+      datasets: [{ label: 'Publicações', data: valoresPub, backgroundColor: '#10b981' }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+
+  new Chart(document.getElementById('chart-top-posts'), {
+    type: 'bar',
+    data: {
+      labels: topTitulos,
+      datasets: [{ label: 'Curtidas', data: topCurtidas, backgroundColor: '#f59e0b' }]
+    },
+    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+  });
+</script>
+{% endblock %}

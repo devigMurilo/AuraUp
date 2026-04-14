@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Nova Publicação — ConnectBiz{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Nova Publicação</h1>
+
+<article class="ds-card" style="max-width:600px">
+  <header class="ds-card__header">
+    <h2 class="ds-card__title">Criar publicação</h2>
+    <p class="ds-card__description">Compartilhe novidades, promoções ou serviços</p>
+  </header>
+  <div class="ds-card__content">
+    <form method="post" enctype="multipart/form-data" style="display:grid;gap:var(--spacing-lg)">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="ds-field {% if field.errors %}ds-field--error{% endif %}">
+          <label class="ds-field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {% if field.field.widget.input_type == 'textarea' %}
+            <textarea class="ds-field__control" name="{{ field.html_name }}"
+                      id="{{ field.id_for_label }}" rows="4">{{ field.value|default:'' }}</textarea>
+          {% elif field.field.widget.input_type == 'file' %}
+            <input class="ds-field__control" type="file"
+                   name="{{ field.html_name }}" id="{{ field.id_for_label }}" accept="image/*">
+          {% else %}
+            <input class="ds-field__control" type="{{ field.field.widget.input_type }}"
+                   name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                   value="{{ field.value|default:'' }}">
+          {% endif %}
+          {% if field.errors %}
+            <p class="ds-field__error">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div style="display:flex;gap:var(--spacing-sm)">
+        <button type="submit" class="ds-button ds-button--primary">Publicar</button>
+        <a href="{% url 'feed' %}" class="ds-button ds-button--outline">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</article>
+{% endblock %}

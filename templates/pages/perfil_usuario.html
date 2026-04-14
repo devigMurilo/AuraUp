@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Meu Perfil — ConnectBiz{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Meu Perfil</h1>
+
+<article class="ds-card" style="max-width:480px">
+  <header class="ds-card__header">
+    <h2 class="ds-card__title">Dados da conta</h2>
+    <p class="ds-card__description">Atualize suas informações pessoais</p>
+  </header>
+  <div class="ds-card__content">
+    <form method="post" style="display:grid;gap:var(--spacing-lg)">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="ds-field {% if field.errors %}ds-field--error{% endif %}">
+          <label class="ds-field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          <input class="ds-field__control" type="{{ field.field.widget.input_type }}"
+                 name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                 value="{{ field.value|default:'' }}">
+          {% if field.errors %}
+            <p class="ds-field__error">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="ds-button ds-button--primary">Salvar alterações</button>
+    </form>
+  </div>
+</article>
+{% endblock %}

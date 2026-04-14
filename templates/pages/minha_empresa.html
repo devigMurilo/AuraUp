@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Minha Empresa — ConnectBiz{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% if empresa %}Editar perfil{% else %}Criar perfil da empresa{% endif %}</h1>
+
+<article class="ds-card" style="max-width:600px">
+  <header class="ds-card__header">
+    <h2 class="ds-card__title">Perfil da empresa</h2>
+    <p class="ds-card__description">Estas informações ficam visíveis para todos os clientes</p>
+  </header>
+  <div class="ds-card__content">
+    <form method="post" enctype="multipart/form-data" style="display:grid;gap:var(--spacing-lg)">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="ds-field {% if field.errors %}ds-field--error{% endif %}">
+          <label class="ds-field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+          {% if field.field.widget.input_type == 'select' %}
+            <select class="ds-field__control" name="{{ field.html_name }}" id="{{ field.id_for_label }}">
+              {% for val, label in field.field.choices %}
+                <option value="{{ val }}" {% if field.value == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          {% elif field.field.widget.input_type == 'textarea' %}
+            <textarea class="ds-field__control" name="{{ field.html_name }}"
+                      id="{{ field.id_for_label }}" rows="3">{{ field.value|default:'' }}</textarea>
+          {% elif field.field.widget.input_type == 'file' %}
+            <input class="ds-field__control" type="file"
+                   name="{{ field.html_name }}" id="{{ field.id_for_label }}" accept="image/*">
+            {% if empresa.foto_perfil %}
+              <p class="ds-field__hint">Atual: <a href="{{ empresa.foto_perfil.url }}" target="_blank">ver foto</a></p>
+            {% endif %}
+          {% else %}
+            <input class="ds-field__control" type="{{ field.field.widget.input_type }}"
+                   name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                   value="{{ field.value|default:'' }}">
+          {% endif %}
+
+          {% if field.errors %}
+            <p class="ds-field__error">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="ds-button ds-button--primary">Salvar</button>
+    </form>
+  </div>
+</article>
+{% endblock %}

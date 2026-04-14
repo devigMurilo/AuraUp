@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Empresas — ConnectBiz{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem">
+  <h1 class="page-title" style="margin:0">Empresas</h1>
+  <form method="get" style="display:flex; gap:.5rem">
+    <input type="text" name="busca" value="{{ busca }}" placeholder="🔍 Buscar..." class="input-busca">
+    <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+  </form>
+</div>
+
+<!-- Pills de categoria -->
+<div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.5rem">
+  <a href="{% url 'lista_empresas' %}" class="pill {% if not categoria %}active{% endif %}">Todas</a>
+  {% for val, label in categorias %}
+    <a href="?categoria={{ val }}" class="pill {% if categoria == val %}active{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<div class="empresas-grid">
+  {% for empresa in empresas %}
+    <a href="{% url 'perfil_empresa' empresa.pk %}" class="empresa-card">
+      <div class="empresa-avatar">
+        {% if empresa.foto_perfil %}
+          <img src="{{ empresa.foto_perfil.url }}" alt="{{ empresa.nome_fantasia }}" style="width:56px;height:56px;border-radius:50%;object-fit:cover">
+        {% else %}
+          {{ empresa.nome_fantasia|first|upper }}
+        {% endif %}
+      </div>
+      <span class="empresa-nome">{{ empresa.nome_fantasia }}</span>
+      <span class="badge-cat">{{ empresa.get_categoria_display }}</span>
+      <span class="empresa-cidade">📍 {{ empresa.cidade|default:"Localização não informada" }}</span>
+      <div class="empresa-stats">
+        <span>⭐ {{ empresa.media_avaliacoes }}</span>
+        <span>👥 {{ empresa.total_seguidores }} seguidores</span>
+      </div>
+    </a>
+  {% empty %}
+    <p class="empty-state">Nenhuma empresa encontrada.</p>
+  {% endfor %}
+</div>
+{% endblock %}

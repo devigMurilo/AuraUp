@@ -1,0 +1,67 @@
+.ds-field {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.ds-field__label {
+  color: var(--color-foreground);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-600);
+  line-height: var(--font-line-height-small);
+}
+
+.ds-field__control {
+  width: 100%;
+  min-height: calc(var(--spacing-xl) + var(--spacing-lg));
+  padding-inline: var(--spacing-md);
+  border: 1px solid var(--color-input);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-surface-foreground);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-400);
+  line-height: var(--font-line-height-body);
+}
+
+.ds-field__control::placeholder {
+  color: var(--color-muted-foreground);
+}
+
+.ds-field__control:hover {
+  border-color: color-mix(in srgb, var(--color-border) 72%, var(--color-foreground));
+}
+
+.ds-field__control:focus-visible {
+  border-color: var(--color-ring);
+  outline: var(--spacing-xs) solid var(--color-ring);
+  outline-offset: var(--spacing-xs);
+}
+
+.ds-field__control:disabled,
+.ds-field__control[aria-disabled="true"] {
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  cursor: not-allowed;
+}
+
+.ds-field__hint,
+.ds-field__error {
+  font-size: var(--font-size-small);
+  line-height: var(--font-line-height-small);
+}
+
+.ds-field__hint {
+  color: var(--color-muted-foreground);
+}
+
+.ds-field__error {
+  color: var(--color-destructive);
+}
+
+.ds-field--error .ds-field__control {
+  border-color: var(--color-destructive);
+}
+
+.ds-field--error .ds-field__control:focus-visible {
+  outline-color: var(--color-destructive);
+}

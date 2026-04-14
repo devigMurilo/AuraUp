@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Login — ConnectBiz{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <article class="ds-card auth-card">
+    <header class="ds-card__header">
+      <h1 class="ds-card__title">Entrar no ConnectBiz</h1>
+      <p class="ds-card__description">Conecte sua empresa com clientes locais</p>
+    </header>
+
+    <div class="ds-card__content">
+      <form method="post" style="display:grid;gap:var(--spacing-lg)">
+        {% csrf_token %}
+
+        <div class="ds-field">
+          <label class="ds-field__label" for="email">E-mail</label>
+          <input class="ds-field__control" type="email" id="email" name="email"
+                 placeholder="seu@email.com" required autofocus>
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-field__label" for="password">Senha</label>
+          <input class="ds-field__control" type="password" id="password" name="password"
+                 placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="ds-button ds-button--primary" style="width:100%;justify-content:center">
+          Entrar
+        </button>
+
+        <p class="form-footer">
+          Não tem conta? <a href="{% url 'cadastro' %}">Cadastre-se grátis</a>
+        </p>
+      </form>
+    </div>
+  </article>
+</div>
+{% endblock %}

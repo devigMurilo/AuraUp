@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Cadastro — ConnectBiz{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <article class="ds-card auth-card">
+    <header class="ds-card__header">
+      <h1 class="ds-card__title">Criar conta</h1>
+      <p class="ds-card__description">Junte-se à rede de empresas locais</p>
+    </header>
+
+    <div class="ds-card__content">
+      <form method="post" style="display:grid;gap:var(--spacing-lg)">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="ds-field {% if field.errors %}ds-field--error{% endif %}">
+            <label class="ds-field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% if field.field.widget.input_type == 'select' %}
+              <select class="ds-field__control" name="{{ field.html_name }}" id="{{ field.id_for_label }}">
+                {% for val, label in field.field.choices %}
+                  <option value="{{ val }}" {% if field.value == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            {% elif field.field.widget.input_type == 'password' %}
+              <input class="ds-field__control" type="password"
+                     name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     placeholder="Mínimo 6 caracteres">
+            {% else %}
+              <input class="ds-field__control" type="{{ field.field.widget.input_type }}"
+                     name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     value="{{ field.value|default:'' }}"
+                     placeholder="{{ field.label }}">
+            {% endif %}
+            {% if field.errors %}
+              <p class="ds-field__error">{{ field.errors.0 }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="ds-button ds-button--primary" style="width:100%;justify-content:center">
+          Criar conta
+        </button>
+
+        <p class="form-footer">
+          Já tem conta? <a href="{% url 'login' %}">Entrar</a>
+        </p>
+      </form>
+    </div>
+  </article>
+</div>
+{% endblock %}
