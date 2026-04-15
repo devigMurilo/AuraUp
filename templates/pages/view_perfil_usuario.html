@@ -1,0 +1,73 @@
+﻿{% extends 'base.html' %}
+{% block title %}{{ usuario.nome }} — ConnectBiz{% endblock %}
+
+{% block content %}
+
+<!-- HEADER DO USUARIO -->
+<div class="perfil-header">
+  <div class="usuario-avatar" style="width:80px;height:80px;border-radius:var(--radius-md);font-size:2rem;flex-shrink:0;background-color:var(--color-primary);display:flex;align-items:center;justify-content:center;color:white">
+    {{ usuario.nome|first|upper }}
+  </div>
+
+  <div class="perfil-info" style="flex:1">
+    <h1>{{ usuario.nome }}</h1>
+    <p style="color:var(--color-muted-foreground);font-size:var(--font-size-small)">{{ usuario.email }}</p>
+    
+    <div class="perfil-stats">
+      <span>{{ total_seguidores }} followers</span>
+      <span>{{ total_seguindo }} following</span>
+      <span>Joined {{ usuario.criado_em|date:'M Y' }}</span>
+    </div>
+
+    {% if request.user.is_authenticated and request.user != usuario %}
+      <form method="post" action="{% url 'follow_usuario' usuario.pk %}" style="margin-top:var(--spacing-md)">
+        {% csrf_token %}
+        <button type="submit" class="ds-button {% if esta_seguindo %}ds-button--outline{% else %}ds-button--primary{% endif %}">
+          {% if esta_seguindo %} Unfollow{% else %}+ Follow{% endif %}
+        </button>
+      </form>
+    {% elif request.user == usuario %}
+      <a href="{% url 'perfil' %}" class="ds-button ds-button--secondary" style="margin-top:var(--spacing-md)">
+        Edit Profile
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- POSTS -->
+<h2 style="margin-top:var(--spacing-xl);margin-bottom:var(--spacing-lg)">Posts</h2>
+<div class="feed-posts">
+  {% for pub in publicacoes %}
+    <article class="post-card">
+      <div class="post-header">
+        <span class="post-data">{{ pub.criado_em|date:'d/m/Y' }}</span>
+      </div>
+      <h2 class="post-titulo">
+        <a href="{% url 'detalhe_publicacao' pub.pk %}">{{ pub.titulo }}</a>
+      </h2>
+      <p class="post-conteudo">{{ pub.conteudo|truncatewords:40 }}</p>
+      {% if pub.imagem %}
+        <img src="{{ pub.imagem.url }}" class="post-imagem" alt="{{ pub.titulo }}">
+      {% endif %}
+      <div class="post-actions">
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'curtir' pub.pk %}" class="btn-curtir">Heart {{ pub.total_curtidas }}</a>
+        {% else %}
+          <span class="btn-curtir">Heart {{ pub.total_curtidas }}</span>
+        {% endif %}
+        <a href="{% url 'detalhe_publicacao' pub.pk %}" class="btn-comentar">
+          Chat {{ pub.comentarios.count }}
+        </a>
+        {% if request.user == usuario %}
+          <a href="{% url 'excluir_publicacao' pub.pk %}"
+             onclick="return confirm('Delete this post?')"
+             class="btn-excluir">Trash</a>
+        {% endif %}
+      </div>
+    </article>
+  {% empty %}
+    <p class="empty-state">No posts yet.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

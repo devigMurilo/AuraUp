@@ -9,8 +9,8 @@ class CadastroForm(forms.ModelForm):
 
     class Meta:
         model  = Usuario
-        fields = ['nome', 'email', 'tipo']
-        labels = {'nome': 'Nome completo', 'email': 'E-mail', 'tipo': 'Tipo de conta'}
+        fields = ['nome', 'email']
+        labels = {'nome': 'Nome completo', 'email': 'E-mail'}
 
     def clean(self):
         cleaned = super().clean()

@@ -20,11 +20,9 @@
     <a href="{% url 'lista_empresas' %}">Empresas</a>
 
     {% if request.user.is_authenticated %}
-      {% if request.user.tipo == 'empresa' %}
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'minha_empresa' %}">Minha Empresa</a>
-        <a href="{% url 'criar_publicacao' %}">+ Publicar</a>
-      {% endif %}
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'minha_empresa' %}">Minha Empresa</a>
+      <a href="{% url 'criar_publicacao' %}">+ Publicar</a>
       <a href="{% url 'perfil' %}">{{ request.user.nome }}</a>
       <form method="post" action="{% url 'logout' %}" style="display:inline">
         {% csrf_token %}
@@ -36,7 +34,7 @@
     {% endif %}
   </div>
 
-  <button class="navbar-toggle" onclick="document.getElementById('navbar-links').classList.toggle('open')">â˜°</button>
+  <button class="navbar-toggle" onclick="document.getElementById('navbar-links').classList.toggle('open')">?</button>
 </nav>
 
 {% if messages %}
@@ -52,7 +50,7 @@
 </main>
 
 <footer class="footer">
-  <p>ConnectBiz &copy; 2025 â€” TCC InformÃ¡tica para Internet</p>
+  <p>ConnectBiz &copy; 2025 — TCC Informática para Internet</p>
 </footer>
 
 <script src="{% static 'js/app.js' %}"></script>

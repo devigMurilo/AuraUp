@@ -1,6 +1,8 @@
-from django.shortcuts import render, redirect, get_object_or_404
+﻿from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponseForbidden
+from django.db.models import Count
 from .models import Publicacao, Curtida, Comentario
 from .forms import PublicacaoForm, ComentarioForm
 
@@ -10,15 +12,22 @@ CRIAR_TEMPLATE = 'pages/criar_publicacao.html'
 
 
 def feed_view(request):
-    publicacoes = Publicacao.objects.select_related('empresa').all()
+    publicacoes = Publicacao.objects.select_related('empresa', 'usuario').all()
     categoria   = request.GET.get('categoria')
     cidade      = request.GET.get('cidade')
     if categoria:
         publicacoes = publicacoes.filter(empresa__categoria=categoria)
     if cidade:
         publicacoes = publicacoes.filter(empresa__cidade__icontains=cidade)
+    
+    # Get trending posts (most liked)
+    trending = Publicacao.objects.select_related('empresa', 'usuario').annotate(
+        total_likes=Count('curtidas')
+    ).order_by('-total_likes')[:5]
+    
     return render(request, FEED_TEMPLATE, {
         'publicacoes': publicacoes,
+        'trending': trending,
         'categoria':   categoria,
         'cidade':      cidade,
         'form_comentario': ComentarioForm(),
@@ -46,9 +55,15 @@ def criar_publicacao_view(request):
     form = PublicacaoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         pub = form.save(commit=False)
-        pub.empresa = request.user.empresa
+        
+        # Logic: if user has a company, publish as company
+        if hasattr(request.user, 'empresa') and request.user.empresa:
+            pub.empresa = request.user.empresa
+        else:
+            pub.usuario = request.user
+        
         pub.save()
-        messages.success(request, 'Publicação criada!')
+        messages.success(request, 'Publication created!')
         return redirect('/feed/')
     return render(request, CRIAR_TEMPLATE, {'form': form})
 
@@ -64,7 +79,14 @@ def curtir_view(request, pk):
 
 @login_required
 def excluir_publicacao_view(request, pk):
-    publicacao = get_object_or_404(Publicacao, pk=pk, empresa=request.user.empresa)
+    publicacao = get_object_or_404(Publicacao, pk=pk)
+    
+    # Check if current user is the author (either usuario or empresa owner)
+    is_author = publicacao.usuario == request.user or (hasattr(request.user, 'empresa') and publicacao.empresa == request.user.empresa)
+    
+    if not is_author:
+        return HttpResponseForbidden('You cannot delete this publication.')
+    
     publicacao.delete()
-    messages.success(request, 'Publicação excluída.')
+    messages.success(request, 'Publication deleted.')
     return redirect('/feed/')

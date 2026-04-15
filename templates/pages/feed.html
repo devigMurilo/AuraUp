@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% block title %}Feed — ConnectBiz{% endblock %}
 
 {% block content %}
@@ -7,48 +7,73 @@
   <!-- FILTROS -->
   <aside>
     <article class="ds-card feed-filters">
-      <h3>Filtrar</h3>
+      <h3>Filter</h3>
       <form method="get" style="display:grid;gap:var(--spacing-md)">
         <div class="ds-field filter-group">
-          <label class="ds-field__label">Categoria</label>
+          <label class="ds-field__label">Category</label>
           <select class="ds-field__control" name="categoria" onchange="this.form.submit()">
-            <option value="">Todas</option>
-            <option value="alimentacao" {% if categoria == 'alimentacao' %}selected{% endif %}>Alimentação</option>
-            <option value="moda"        {% if categoria == 'moda' %}selected{% endif %}>Moda</option>
-            <option value="servicos"    {% if categoria == 'servicos' %}selected{% endif %}>Serviços</option>
-            <option value="saude"       {% if categoria == 'saude' %}selected{% endif %}>Saúde e Beleza</option>
-            <option value="educacao"    {% if categoria == 'educacao' %}selected{% endif %}>Educação</option>
-            <option value="tecnologia"  {% if categoria == 'tecnologia' %}selected{% endif %}>Tecnologia</option>
+            <option value="">All</option>
+            <option value="alimentacao" {% if categoria == 'alimentacao' %}selected{% endif %}>Food</option>
+            <option value="moda"        {% if categoria == 'moda' %}selected{% endif %}>Fashion</option>
+            <option value="servicos"    {% if categoria == 'servicos' %}selected{% endif %}>Services</option>
+            <option value="saude"       {% if categoria == 'saude' %}selected{% endif %}>Health Beauty</option>
+            <option value="educacao"    {% if categoria == 'educacao' %}selected{% endif %}>Education</option>
+            <option value="tecnologia"  {% if categoria == 'tecnologia' %}selected{% endif %}>Tech</option>
           </select>
         </div>
         <div class="ds-field filter-group">
-          <label class="ds-field__label">Cidade</label>
+          <label class="ds-field__label">City</label>
           <input class="ds-field__control" type="text" name="cidade"
                  value="{{ cidade }}" placeholder="Ex: Natal">
           <button type="submit" class="ds-button ds-button--secondary"
                   style="min-height:auto;padding:var(--spacing-xs) var(--spacing-md);font-size:var(--font-size-small)">
-            Filtrar
+            Filter
           </button>
         </div>
       </form>
     </article>
+    
+    <!-- TRENDING POSTS -->
+    {% if trending %}
+    <article class="ds-card feed-filters">
+      <h3>Trending Posts</h3>
+      <div style="display:grid;gap:var(--spacing-md)">
+        {% for pub in trending %}
+          <a href="{% url 'detalhe_publicacao' pub.pk %}" style="text-decoration:none;color:inherit">
+            <div style="padding:var(--spacing-sm);border-radius:var(--radius-sm);background-color:var(--color-secondary);hover-background:var(--color-secondary-hover)">
+              <strong>{{ pub.titulo|truncatewords:5 }}</strong>
+              <p style="font-size:var(--font-size-small);color:var(--color-muted-foreground);margin-top:var(--spacing-xs)">
+                Love {{ pub.total_curtidas }}
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </article>
+    {% endif %}
   </aside>
 
   <!-- POSTS -->
   <section class="feed-posts">
-    {% if request.user.is_authenticated and request.user.tipo == 'empresa' %}
+    {% if request.user.is_authenticated %}
       <div style="margin-bottom:var(--spacing-lg)">
-        <a href="{% url 'criar_publicacao' %}" class="ds-button ds-button--primary">+ Nova publicação</a>
+        <a href="{% url 'criar_publicacao' %}" class="ds-button ds-button--primary">+ New post</a>
       </div>
     {% endif %}
 
     {% for pub in publicacoes %}
       <article class="post-card">
         <div class="post-header">
-          <a href="{% url 'perfil_empresa' pub.empresa.pk %}" class="post-empresa">
-            {{ pub.empresa.nome_fantasia }}
-          </a>
-          <span class="post-data">{{ pub.criado_em|date:"d/m/Y" }}</span>
+          {% if pub.usuario %}
+            <a href="{% url 'perfil_usuario' pub.usuario.pk %}" class="post-empresa">
+              {{ pub.usuario.nome }}
+            </a>
+          {% else %}
+            <a href="{% url 'perfil_empresa' pub.empresa.pk %}" class="post-empresa">
+              {{ pub.empresa.nome_fantasia }}
+            </a>
+          {% endif %}
+          <span class="post-data">{{ pub.criado_em|date:'d/m/Y' }}</span>
         </div>
 
         <h2 class="post-titulo">
@@ -62,22 +87,22 @@
 
         <div class="post-actions">
           {% if request.user.is_authenticated %}
-            <a href="{% url 'curtir' pub.pk %}" class="btn-curtir">❤️ {{ pub.total_curtidas }}</a>
+            <a href="{% url 'curtir' pub.pk %}" class="btn-curtir">Love {{ pub.total_curtidas }}</a>
           {% else %}
-            <span class="btn-curtir">❤️ {{ pub.total_curtidas }}</span>
+            <span class="btn-curtir">Love {{ pub.total_curtidas }}</span>
           {% endif %}
           <a href="{% url 'detalhe_publicacao' pub.pk %}" class="btn-comentar">
-            💬 {{ pub.comentarios.count }}
+            Chat {{ pub.comentarios.count }}
           </a>
-          {% if request.user.is_authenticated and request.user.tipo == 'empresa' and pub.empresa == request.user.empresa %}
+          {% if request.user == pub.usuario or request.user == pub.empresa.usuario %}
             <a href="{% url 'excluir_publicacao' pub.pk %}"
-               onclick="return confirm('Excluir esta publicação?')"
-               class="btn-excluir">🗑️</a>
+               onclick="return confirm('Delete this post?')"
+               class="btn-excluir">Trash</a>
           {% endif %}
         </div>
       </article>
     {% empty %}
-      <p class="empty-state">Nenhuma publicação encontrada.</p>
+      <p class="empty-state">No posts found.</p>
     {% endfor %}
   </section>
 

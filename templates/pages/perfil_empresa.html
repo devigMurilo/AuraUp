@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ empresa.nome_fantasia }} â€” ConnectBiz{% endblock %}
+{% block title %}{{ empresa.nome_fantasia }} — ConnectBiz{% endblock %}
 {% load avaliacoes_extras %}
 
 {% block content %}
@@ -18,7 +18,7 @@
   <div class="perfil-info" style="flex:1">
     <h1>{{ empresa.nome_fantasia }}</h1>
     <p class="categoria">{{ empresa.get_categoria_display }}</p>
-    <p class="cidade">ğŸ“ {{ empresa.cidade|default:"Cidade nÃ£o informada" }}</p>
+    <p class="cidade">?? {{ empresa.cidade|default:"Cidade não informada" }}</p>
     {% if empresa.descricao %}
       <p style="margin-top:var(--spacing-sm);font-size:var(--font-size-small);color:var(--color-muted-foreground)">
         {{ empresa.descricao }}
@@ -26,16 +26,16 @@
     {% endif %}
 
     <div class="perfil-stats">
-      <span>â­ {{ empresa.media_avaliacoes }} mÃ©dia</span>
-      <span>ğŸ‘¥ {{ empresa.total_seguidores }} seguidores</span>
-      {% if empresa.contato %}<span>ğŸ“ {{ empresa.contato }}</span>{% endif %}
+      <span>? {{ empresa.media_avaliacoes }} média</span>
+      <span>?? {{ empresa.total_seguidores }} seguidores</span>
+      {% if empresa.contato %}<span>?? {{ empresa.contato }}</span>{% endif %}
     </div>
 
-    {% if request.user.is_authenticated and request.user.tipo == 'cliente' %}
+    {% if request.user.is_authenticated %}
       <form method="post" action="{% url 'follow' empresa.pk %}" style="margin-top:var(--spacing-md)">
         {% csrf_token %}
         <button type="submit" class="ds-button {% if ja_segue %}ds-button--outline{% else %}ds-button--primary{% endif %}">
-          {% if ja_segue %}âœ“ Seguindo{% else %}+ Seguir{% endif %}
+          {% if ja_segue %}? Seguindo{% else %}+ Seguir{% endif %}
         </button>
       </form>
     {% endif %}
@@ -44,11 +44,11 @@
 
 <!-- TABS -->
 <div class="tabs">
-  <button class="tab active" onclick="mostrarTab('publicacoes', this)">PublicaÃ§Ãµes</button>
-  <button class="tab" onclick="mostrarTab('avaliacoes', this)">AvaliaÃ§Ãµes</button>
+  <button class="tab active" onclick="mostrarTab('publicacoes', this)">Publicações</button>
+  <button class="tab" onclick="mostrarTab('avaliacoes', this)">Avaliações</button>
 </div>
 
-<!-- PUBLICAÃ‡Ã•ES -->
+<!-- PUBLICAÇÕES -->
 <div id="tab-publicacoes" class="tab-content">
   {% for pub in empresa.publicacoes.all %}
     <article class="post-card">
@@ -63,16 +63,16 @@
         <img src="{{ pub.imagem.url }}" class="post-imagem" alt="{{ pub.titulo }}">
       {% endif %}
       <div class="post-actions">
-        <span class="btn-curtir">â¤ï¸ {{ pub.total_curtidas }}</span>
-        <a href="{% url 'detalhe_publicacao' pub.pk %}" class="btn-comentar">ğŸ’¬ ver post</a>
+        <span class="btn-curtir">?? {{ pub.total_curtidas }}</span>
+        <a href="{% url 'detalhe_publicacao' pub.pk %}" class="btn-comentar">?? ver post</a>
       </div>
     </article>
   {% empty %}
-    <p class="empty-state">Nenhuma publicaÃ§Ã£o ainda.</p>
+    <p class="empty-state">Nenhuma publicação ainda.</p>
   {% endfor %}
 </div>
 
-<!-- AVALIAÃ‡Ã•ES -->
+<!-- AVALIAÇÕES -->
 <div id="tab-avaliacoes" class="tab-content" style="display:none">
   {% for av in empresa.avaliacoes.all %}
     <div class="avaliacao-card">
@@ -86,12 +86,12 @@
       <small style="color:var(--color-muted-foreground)">{{ av.criado_em|date:"d/m/Y" }}</small>
     </div>
   {% empty %}
-    <p class="empty-state">Nenhuma avaliaÃ§Ã£o ainda.</p>
+    <p class="empty-state">Nenhuma avaliação ainda.</p>
   {% endfor %}
 
-  {% if request.user.is_authenticated and request.user.tipo == 'cliente' %}
+  {% if request.user.is_authenticated %}
     <div class="form-avaliacao">
-      <h3>Deixe sua avaliaÃ§Ã£o</h3>
+      <h3>Deixe sua avaliação</h3>
       <form method="post" action="{% url 'avaliar' empresa.pk %}" style="display:grid;gap:var(--spacing-lg)">
         {% csrf_token %}
         <div class="ds-field">
@@ -99,24 +99,24 @@
           <div class="radio-stars">
             {% for i in "12345" %}
               <label>
-                <input type="radio" name="nota" value="{{ i }}" required> {{ i }}â˜…
+                <input type="radio" name="nota" value="{{ i }}" required> {{ i }}?
               </label>
             {% endfor %}
           </div>
         </div>
         <div class="ds-field">
-          <label class="ds-field__label" for="comentario">ComentÃ¡rio (opcional)</label>
+          <label class="ds-field__label" for="comentario">Comentário (opcional)</label>
           <textarea class="ds-field__control" name="comentario" id="comentario" rows="3"
-                    placeholder="Conte sua experiÃªncia..."></textarea>
+                    placeholder="Conte sua experiência..."></textarea>
         </div>
         <div>
-          <button type="submit" class="ds-button ds-button--primary">Enviar avaliaÃ§Ã£o</button>
+          <button type="submit" class="ds-button ds-button--primary">Enviar avaliação</button>
         </div>
       </form>
     </div>
   {% elif not request.user.is_authenticated %}
     <p style="margin-top:var(--spacing-lg);font-size:var(--font-size-small);color:var(--color-muted-foreground)">
-      <a href="{% url 'login' %}">FaÃ§a login</a> para avaliar esta empresa.
+      <a href="{% url 'login' %}">Faça login</a> para avaliar esta empresa.
     </p>
   {% endif %}
 </div>
