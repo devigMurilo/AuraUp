@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ empresa.nome_fantasia }} — ConnectBiz{% endblock %}
+{% block title %}{{ empresa.nome_fantasia }} â€” ConnectBiz{% endblock %}
 {% load avaliacoes_extras %}
 
 {% block content %}
@@ -18,7 +18,7 @@
   <div class="perfil-info" style="flex:1">
     <h1>{{ empresa.nome_fantasia }}</h1>
     <p class="categoria">{{ empresa.get_categoria_display }}</p>
-    <p class="cidade">?? {{ empresa.cidade|default:"Cidade não informada" }}</p>
+    <p class="cidade">?? {{ empresa.cidade|default:"Cidade nÄƒo informada" }}</p>
     {% if empresa.descricao %}
       <p style="margin-top:var(--spacing-sm);font-size:var(--font-size-small);color:var(--color-muted-foreground)">
         {{ empresa.descricao }}
@@ -26,7 +26,7 @@
     {% endif %}
 
     <div class="perfil-stats">
-      <span>? {{ empresa.media_avaliacoes }} média</span>
+      <span>? {{ empresa.media_avaliacoes }} mÃ©dia</span>
       <span>?? {{ empresa.total_seguidores }} seguidores</span>
       {% if empresa.contato %}<span>?? {{ empresa.contato }}</span>{% endif %}
     </div>
@@ -44,11 +44,11 @@
 
 <!-- TABS -->
 <div class="tabs">
-  <button class="tab active" onclick="mostrarTab('publicacoes', this)">Publicações</button>
-  <button class="tab" onclick="mostrarTab('avaliacoes', this)">Avaliações</button>
+  <button class="tab active" onclick="mostrarTab('publicacoes', this)">PublicaÃ§Å‘es</button>
+  <button class="tab" onclick="mostrarTab('avaliacoes', this)">AvaliaÃ§Å‘es</button>
 </div>
 
-<!-- PUBLICAÇÕES -->
+<!-- PUBLICAÃ‡ÅES -->
 <div id="tab-publicacoes" class="tab-content">
   {% for pub in empresa.publicacoes.all %}
     <article class="post-card">
@@ -68,11 +68,11 @@
       </div>
     </article>
   {% empty %}
-    <p class="empty-state">Nenhuma publicação ainda.</p>
+    <p class="empty-state">Nenhuma publicaÃ§Äƒo ainda.</p>
   {% endfor %}
 </div>
 
-<!-- AVALIAÇÕES -->
+<!-- AVALIAÃ‡ÅES -->
 <div id="tab-avaliacoes" class="tab-content" style="display:none">
   {% for av in empresa.avaliacoes.all %}
     <div class="avaliacao-card">
@@ -86,12 +86,12 @@
       <small style="color:var(--color-muted-foreground)">{{ av.criado_em|date:"d/m/Y" }}</small>
     </div>
   {% empty %}
-    <p class="empty-state">Nenhuma avaliação ainda.</p>
+    <p class="empty-state">Nenhuma avaliaÃ§Äƒo ainda.</p>
   {% endfor %}
 
   {% if request.user.is_authenticated %}
     <div class="form-avaliacao">
-      <h3>Deixe sua avaliação</h3>
+      <h3>Deixe sua avaliaÃ§Äƒo</h3>
       <form method="post" action="{% url 'avaliar' empresa.pk %}" style="display:grid;gap:var(--spacing-lg)">
         {% csrf_token %}
         <div class="ds-field">
@@ -105,18 +105,18 @@
           </div>
         </div>
         <div class="ds-field">
-          <label class="ds-field__label" for="comentario">Comentário (opcional)</label>
+          <label class="ds-field__label" for="comentario">ComentÃ¡rio (opcional)</label>
           <textarea class="ds-field__control" name="comentario" id="comentario" rows="3"
-                    placeholder="Conte sua experiência..."></textarea>
+                    placeholder="Conte sua experiÄ™ncia..."></textarea>
         </div>
         <div>
-          <button type="submit" class="ds-button ds-button--primary">Enviar avaliação</button>
+          <button type="submit" class="ds-button ds-button--primary">Enviar avaliaÃ§Äƒo</button>
         </div>
       </form>
     </div>
   {% elif not request.user.is_authenticated %}
     <p style="margin-top:var(--spacing-lg);font-size:var(--font-size-small);color:var(--color-muted-foreground)">
-      <a href="{% url 'login' %}">Faça login</a> para avaliar esta empresa.
+      <a href="{% url 'login' %}">FaÃ§a login</a> para avaliar esta empresa.
     </p>
   {% endif %}
 </div>
@@ -132,4 +132,4 @@ function mostrarTab(tab, btn) {
   btn.classList.add('active');
 }
 </script>
-{% endblock %}
+{% endblock %}

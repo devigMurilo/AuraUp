@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
@@ -27,7 +28,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table     = 'usuarios'
-        verbose_name = 'Usuario'
+        verbose_name = 'Usuário'
 
     def __str__(self):
         return f'{self.nome}'
@@ -41,8 +42,8 @@ class FollowUsuario(models.Model):
     class Meta:
         db_table = 'follow_usuarios'
         unique_together = ('usuario', 'usuario_seguido')
-        verbose_name = 'Seguimento Usuario'
-        verbose_name_plural = 'Seguimentos Usuarios'
+        verbose_name = 'Seguimento de Usuário'
+        verbose_name_plural = 'Seguimentos de Usuários'
 
     def __str__(self):
         return f'{self.usuario.nome} segue {self.usuario_seguido.nome}'
