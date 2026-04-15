@@ -1,0 +1,226 @@
+﻿{% extends base.html %}
+{% load static %}
+{% block title %}Dashboard da Empresa - AuraUp{% endblock %}
+
+{% block content %}
+<div class=container dashboard-container>
+    <div class=dashboard-header>
+        <h1>Dashboard da Empresa</h1>
+        <p class=empresa-name>{{ empresa.nome_fantasia }}</p>
+    </div>
+
+    <!-- Seletor de Período -->
+    <div class=periodo-selector>
+        <label>Período:</label>
+        <div class=periodo-buttons>
+            <a href=?periodo=hoje class=periodo-btn {% if periodo == 'hoje' %}active{% endif %}>Hoje</a>
+            <a href=?periodo=7d class=periodo-btn {% if periodo == '7d' %}active{% endif %}>7 Dias</a>
+            <a href=?periodo=30d class=periodo-btn {% if periodo == '30d' %}active{% endif %}>30 Dias</a>
+            <a href=?periodo=3m class=periodo-btn {% if periodo == '3m' %}active{% endif %}>3 Meses</a>
+            <a href=?periodo=12m class=periodo-btn {% if periodo == '12m' %}active{% endif %}>12 Meses</a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class=kpi-grid>
+        <div class=kpi-card>
+            <div class=kpi-icon>📝</div>
+            <div class=kpi-content>
+                <h3>Publicações</h3>
+                <p class=kpi-value>{{ kpis.total_publicacoes }}</p>
+                <p class=kpi-change {% if kpis.mudanca_publicacoes >= 0 %}positive{% else %}negative{% endif %}>
+                    {% if kpis.mudanca_publicacoes >= 0 %}↑{% else %}↓{% endif %} {{ kpis.mudanca_publicacoes|abs }}
+                </p>
+            </div>
+        </div>
+
+        <div class=kpi-card>
+            <div class=kpi-icon>👥</div>
+            <div class=kpi-content>
+                <h3>Seguidores</h3>
+                <p class=kpi-value>{{ kpis.total_seguidores }}</p>
+                <p class=kpi-change {% if kpis.mudanca_seguidores >= 0 %}positive{% else %}negative{% endif %}>
+                    {% if kpis.mudanca_seguidores >= 0 %}↑{% else %}↓{% endif %} {{ kpis.mudanca_seguidores|abs }}
+                </p>
+            </div>
+        </div>
+
+        <div class=kpi-card>
+            <div class=kpi-icon>⭐</div>
+            <div class=kpi-content>
+                <h3>Avaliação Média</h3>
+                <p class=kpi-value>{{ kpis.media_avaliacoes|floatformat:1 }}</p>
+                <p class=kpi-subtitle>/5.0</p>
+            </div>
+        </div>
+
+        <div class=kpi-card>
+            <div class=kpi-icon>💬</div>
+            <div class=kpi-content>
+                <h3>Comentários</h3>
+                <p class=kpi-value>{{ kpis.total_comentarios }}</p>
+            </div>
+        </div>
+
+        <div class=kpi-card>
+            <div class=kpi-icon>👍</div>
+            <div class=kpi-content>
+                <h3>Curtidas</h3>
+                <p class=kpi-value>{{ kpis.total_curtidas }}</p>
+            </div>
+        </div>
+
+        <div class=kpi-card>
+            <div class=kpi-icon>⭐</div>
+            <div class=kpi-content>
+                <h3>Total Avaliações</h3>
+                <p class=kpi-value>{{ kpis.total_avaliacoes }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class=charts-section>
+        <h2>Análise de Dados</h2>
+        
+        <div class=charts-grid>
+            <div class=chart-container>
+                <h3>Seguidores ao Longo do Tempo</h3>
+                <canvas id=chart-seguidores></canvas>
+            </div>
+
+            <div class=chart-container>
+                <h3>Publicações ao Longo do Tempo</h3>
+                <canvas id=chart-publicacoes></canvas>
+            </div>
+
+            <div class=chart-container>
+                <h3>Distribuição de Avaliações</h3>
+                <canvas id=chart-avaliacoes></canvas>
+            </div>
+
+            <div class=chart-container>
+                <h3>Top 5 Posts por Engajamento</h3>
+                <canvas id=chart-top-posts></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabelas -->
+    <div class=tables-section>
+        <h2>Dados Detalhados</h2>
+        
+        <div class=tabs>
+            <button class=tab-button active data-tab=publicacoes>Publicações Recentes</button>
+            <button class=tab-button data-tab=avaliacoes>Avaliações Recentes</button>
+            <button class=tab-button data-tab=seguidores>Seguidores Recentes</button>
+        </div>
+
+        <!-- Tab: Publicações -->
+        <div class=tab-content active id=publicacoes-tab>
+            {% if publicacoes_recentes %}
+                <table class=data-table>
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Data</th>
+                            <th>Curtidas</th>
+                            <th>Comentários</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pub in publicacoes_recentes %}
+                        <tr>
+                            <td>{{ pub.titulo|truncatewords:5 }}</td>
+                            <td>{{ pub.criado_em|date:d/m/Y }}</td>
+                            <td>{{ pub.curtidas.count }}</td>
+                            <td>{{ pub.comentarios.count }}</td>
+                            <td><a href={% url 'detalhe_publicacao' pub.id %} class=link-btn>Ver</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class=empty-state>Nenhuma publicação encontrada</p>
+            {% endif %}
+        </div>
+
+        <!-- Tab: Avaliações -->
+        <div class=tab-content id=avaliacoes-tab>
+            {% if avaliacoes_recentes %}
+                <table class=data-table>
+                    <thead>
+                        <tr>
+                            <th>Autor</th>
+                            <th>Rating</th>
+                            <th>Comentário</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for avaliacao in avaliacoes_recentes %}
+                        <tr>
+                            <td>{{ avaliacao.usuario.nome }}</td>
+                            <td>{% for i in 12345 %}{% if i|add:0 <= avaliacao.nota %}⭐{% endif %}{% endfor %}</td>
+                            <td>{{ avaliacao.comentario|truncatewords:10 }}</td>
+                            <td>{{ avaliacao.criado_em|date:d/m/Y }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class=empty-state>Nenhuma avaliação encontrada</p>
+            {% endif %}
+        </div>
+
+        <!-- Tab: Seguidores -->
+        <div class=tab-content id=seguidores-tab>
+            {% if seguidores_recentes %}
+                <table class=data-table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Data</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seguidor in seguidores_recentes %}
+                        <tr>
+                            <td>{{ seguidor.usuario.nome }}</td>
+                            <td>{{ seguidor.seguido_em|date:d/m/Y }}</td>
+                            <td><a href={% url 'view_perfil_usuario' seguidor.usuario.id %} class=link-btn>Ver Perfil</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class=empty-state>Nenhum seguidor encontrado</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class=action-buttons>
+        <a href={% url 'minha_empresa' %} class=ds-button ds-button--primary>Editar Empresa</a>
+        <a href={% url 'criar_publicacao' %} class=ds-button ds-button--secondary>Nova Publicação</a>
+        <a href={% url 'perfil_empresa' empresa.id %} class=ds-button ds-button--outline>Ver Perfil Público</a>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src=https://cdn.jsdelivr.net/npm/chart.js></script>
+<script src={% static 'js/dashboard.js' %}></script>
+
+<script>
+    const dados = {
+        seguidores: {{ grafico_seguidores|safe }},
+        publicacoes: {{ grafico_publicacoes|safe }},
+        avaliacoes: {{ grafico_avaliacoes|safe }},
+        top_posts: {{ top_posts|safe }},
+    };
+    
+    inicializarGraficos(dados);
+</script>
+{% endblock %}
